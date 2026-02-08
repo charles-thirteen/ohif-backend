@@ -8,7 +8,7 @@ import errorHandler from '@Middleware/errorHandler';
 import logger from '@Util/logger';
 import { AppError } from '@Class/error';
 import { Container } from './container';
-import { createAuthRoutes } from '@Route/auth';
+import { createAuthRoutes } from '@Domain/auth/auth.route';
 
 const app = express();
 const port = process.env.PORT;
@@ -20,13 +20,7 @@ const container = Container.getInstance();
 app.use(helmet());
 
 // Cors
-app.use(
-	cors({
-		origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
-		credentials: true,
-		optionsSuccessStatus: 200,
-	}),
-);
+app.use(cors());
 
 // Body parser - Parse JSON bodies (built into Express 4.16+)
 app.use(express.json({ limit: '10mb' }));
@@ -46,7 +40,10 @@ app.use(errorHandler(logger));
 process.on('uncaughtException', (error) => {
 	const isTrustedError = error instanceof AppError;
 
-	if (!isTrustedError) process.exit(1);
+	if (!isTrustedError) {
+		logger.error({ error: error.message }, 'Server Error');
+		process.exit(1);
+	}
 });
 
 app.use(
@@ -54,8 +51,8 @@ app.use(
 	createAuthRoutes(container.authController, container.authMiddleware),
 );
 
-app.listen((error) => {
+app.listen(port, (error) => {
 	if (error) return console.log('Error: ', error);
 
-	console.log(`Server is running at port ${port}`);
+	logger.info(`Server is running at port ${port}`);
 });

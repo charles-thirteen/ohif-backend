@@ -1,15 +1,15 @@
 import bcrypt from 'bcrypt';
-import type { IAuthRepository } from '@Interface/auth';
-import { TokenService } from './token';
-import type {
-	IUser,
-	IUserResponse,
-	IRegisterDTO,
-	ILoginDTO,
-	IAuthTokens,
-} from '@Interface/user';
 import { AppError } from '@Class/error';
 import logger from '@Util/logger';
+import type { IAuthRepository } from './auth.interface';
+import type { TokenService } from '@Service/token';
+import type {
+	IAuthTokens,
+	ILoginDTO,
+	IRegisterDTO,
+	IUser,
+	IUserResponse,
+} from '@Domain/user/user.interface';
 
 export class AuthService {
 	private bcryptRounds: number;
@@ -84,11 +84,6 @@ export class AuthService {
 			throw AppError.unauthorized('Invalid credentials');
 		}
 
-		// Check if user is active
-		if (!user.isActive) {
-			throw AppError.forbidden('Account is deactivated');
-		}
-
 		// Verify password
 		const isPasswordValid = await bcrypt.compare(data.password, user.password);
 		if (!isPasswordValid) {
@@ -153,7 +148,7 @@ export class AuthService {
 
 		// Get user
 		const user = await this.authRepository.findUserById(payload.userId);
-		if (!user || !user.isActive) {
+		if (!user) {
 			throw AppError.unauthorized('Invalid user');
 		}
 
@@ -198,6 +193,7 @@ export class AuthService {
 		return {
 			id: user.id,
 			email: user.email,
+			state: user.state,
 			firstName: user.firstName,
 			lastName: user.lastName,
 			createdAt: user.createdAt,

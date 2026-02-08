@@ -1,24 +1,30 @@
-import { Pool } from 'pg';
-import { AuthController } from '@Controller/auth';
+import { AuthController } from '@Domain/auth/auth.controller';
+import { AuthRepository } from '@Domain/auth/auth.repository';
+import { AuthService } from '@Domain/auth/auth.service';
 import { AuthMiddleware } from '@Middleware/auth';
-import { AuthRepository } from './repositories/auth';
 import { TokenService } from '@Service/token';
-import { AuthService } from '@Service/auth';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { PrismaClient } from './generated/prisma/client';
 
 export class Container {
 	private static instance: Container;
 
+	public prisma: PrismaClient;
 	public authController: AuthController;
 	public authMiddleware: AuthMiddleware;
 
 	private constructor() {
 		// Database connection
-		const db = new Pool({
-			connectionString: process.env.DATABASE_URL,
+		// @ts-ignore
+		const connectionString = process.env.DATABASE_URL!;
+		const adapter = new PrismaPg({ connectionString });
+		this.prisma = new PrismaClient({
+			adapter,
+			log: ['info', 'error', 'query', 'warn'],
 		});
 
 		// Repositories
-		const authRepository = new AuthRepository(db);
+		const authRepository = new AuthRepository(this.prisma);
 
 		// Services
 		const tokenService = new TokenService();

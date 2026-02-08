@@ -4,8 +4,8 @@ export interface IUser {
 	password: string;
 	firstName?: string;
 	lastName?: string;
-	isActive: boolean;
 	lastLoginAt?: Date;
+	state: Record<string, any>;
 	createdAt: Date;
 	updatedAt: Date;
 }

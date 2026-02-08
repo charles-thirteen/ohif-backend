@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from 'express';
-import { AuthService } from '@Service/auth';
+import type { AuthService } from './auth.service';
 
 export class AuthController {
 	constructor(private authService: AuthService) {}
@@ -14,17 +14,17 @@ export class AuthController {
 				ip,
 			);
 
-			res.status(201).json({
-				user: result.user,
-				accessToken: result.tokens.accessToken,
-			});
-
 			// Set refresh token as httpOnly cookie
 			res.cookie('refreshToken', result.tokens.refreshToken, {
 				httpOnly: true,
 				secure: process.env.NODE_ENV === 'production',
 				sameSite: 'strict',
 				maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+			});
+
+			res.status(201).json({
+				user: result.user,
+				accessToken: result.tokens.accessToken,
 			});
 		} catch (error) {
 			next(error);

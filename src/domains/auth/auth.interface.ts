@@ -1,4 +1,4 @@
-import type { IRefreshToken, IUser } from './user';
+import type { IRefreshToken, IUser } from '@Domain/user/user.interface';
 
 export interface IAuthRepository {
 	createUser(

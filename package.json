@@ -5,8 +5,8 @@
 	"main": "index.js",
 	"type": "module",
 	"scripts": {
-		"dev": "nodemon",
-		"build": "tsc",
+		"dev": "tsx watch src/index.ts",
+		"build": "tsc && tsc-alias",
 		"start": "node dist/index.js"
 	},
 	"keywords": [],
@@ -24,10 +24,10 @@
 		"@typescript-eslint/eslint-plugin": "^8.54.0",
 		"@typescript-eslint/parser": "^8.54.0",
 		"eslint": "^9.39.2",
-		"nodemon": "^3.1.11",
 		"prettier": "^3.8.1",
 		"prisma": "^7.3.0",
-		"ts-node": "^10.9.2",
+		"tsc-alias": "^1.8.16",
+		"tsx": "^4.21.0",
 		"typescript": "^5.9.3"
 	},
 	"dependencies": {

@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
-import type { ITokenPayload, IAuthTokens } from '@Interface/user';
 import { AppError } from '@Class/error';
+import type { IAuthTokens, ITokenPayload } from '@Domain/user/user.interface';
 
 export class TokenService {
 	private accessTokenSecret: string;

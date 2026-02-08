@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { AuthController } from '@Controller/auth';
 import type { AuthMiddleware } from '@Middleware/auth';
 import { authValidation } from '@Middleware/auth';
 import { validate } from '@Middleware/validate';
+import type { AuthController } from './auth.controller';
 
 export const createAuthRoutes = (
 	authController: AuthController,

@@ -28,13 +28,10 @@
 		// Path
 		"baseUrl": "./",
 		"paths": {
+			"@Domain/*": ["src/domains/*"],
 			"@Class/*": ["src/classes/*"],
-			"@Controller/*": ["src/controllers/*"],
 			"@Middleware/*": ["src/middlewares/*"],
-			"@Interface/*": ["src/interfaces/*"],
 			"@Service/*": ["src/services/*"],
-			"@Model/*": ["src/models/*"],
-			"@Route/*": ["src/routes/*"],
 			"@Util/*": ["src/utils/*"]
 		},
 
