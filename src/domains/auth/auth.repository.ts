@@ -17,7 +17,7 @@ export class AuthRepository implements IAuthRepository {
 			lastLoginAt: user.lastLoginAt,
 			createdAt: user.createdAt,
 			updatedAt: user.updatedAt,
-      state: user.state ?? {},
+			state: user.state ?? {},
 		} as IUser;
 	}
 
@@ -127,7 +127,7 @@ export class AuthRepository implements IAuthRepository {
 				password,
 				firstName: firstName || '',
 				lastName: lastName || '',
-        state: {},
+				state: {},
 			},
 		});
 		return this.mapToUser(user);

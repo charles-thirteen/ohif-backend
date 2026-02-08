@@ -1,8 +1,7 @@
-import { AuthController } from '@Domain/auth/auth.controller';
-import { AuthRepository } from '@Domain/auth/auth.repository';
-import { AuthService } from '@Domain/auth/auth.service';
-import { AuthMiddleware } from '@Middleware/auth';
-import { TokenService } from '@Service/token';
+import { StateController } from '@Domain/state/state.controller';
+import { StateRepository } from '@Domain/state/state.repository';
+import { StateService } from '@Domain/state/state.service';
+import { KeycloakMiddleware } from '@Middleware/keycloak';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from './generated/prisma/client';
 
@@ -10,8 +9,8 @@ export class Container {
 	private static instance: Container;
 
 	public prisma: PrismaClient;
-	public authController: AuthController;
-	public authMiddleware: AuthMiddleware;
+	public stateController: StateController;
+	public keycloakMiddleware: KeycloakMiddleware;
 
 	private constructor() {
 		// Database connection
@@ -23,18 +22,15 @@ export class Container {
 			log: ['info', 'error', 'query', 'warn'],
 		});
 
-		// Repositories
-		const authRepository = new AuthRepository(this.prisma);
-
-		// Services
-		const tokenService = new TokenService();
-		const authService = new AuthService(authRepository, tokenService);
+		// State domain
+		const stateRepository = new StateRepository(this.prisma);
+		const stateService = new StateService(stateRepository);
 
 		// Controllers
-		this.authController = new AuthController(authService);
+		this.stateController = new StateController(stateService);
 
 		// Middleware
-		this.authMiddleware = new AuthMiddleware(tokenService);
+		this.keycloakMiddleware = new KeycloakMiddleware();
 	}
 
 	public static getInstance(): Container {

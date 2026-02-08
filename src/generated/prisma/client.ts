@@ -29,8 +29,8 @@ export * from "./enums"
  * @example
  * ```
  * const prisma = new PrismaClient()
- * // Fetch zero or more RefreshTokens
- * const refreshTokens = await prisma.refreshToken.findMany()
+ * // Fetch zero or more UserPreferences
+ * const userPreferences = await prisma.userPreference.findMany()
  * ```
  * 
  * Read more in our [docs](https://pris.ly/d/client).
@@ -40,12 +40,12 @@ export type PrismaClient<LogOpts extends Prisma.LogLevel = never, OmitOpts exten
 export { Prisma }
 
 /**
- * Model RefreshToken
+ * Model UserPreference
  * 
  */
-export type RefreshToken = Prisma.RefreshTokenModel
+export type UserPreference = Prisma.UserPreferenceModel
 /**
- * Model User
+ * Model UserAnnotation
  * 
  */
-export type User = Prisma.UserModel
+export type UserAnnotation = Prisma.UserAnnotationModel

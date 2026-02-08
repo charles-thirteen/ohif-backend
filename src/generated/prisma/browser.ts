@@ -18,12 +18,12 @@ export { Prisma }
 export * as $Enums from './enums'
 export * from './enums';
 /**
- * Model RefreshToken
+ * Model UserPreference
  * 
  */
-export type RefreshToken = Prisma.RefreshTokenModel
+export type UserPreference = Prisma.UserPreferenceModel
 /**
- * Model User
+ * Model UserAnnotation
  * 
  */
-export type User = Prisma.UserModel
+export type UserAnnotation = Prisma.UserAnnotationModel

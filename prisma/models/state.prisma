@@ -1,0 +1,20 @@
+// Standalone tables for OHIF state persistence
+// No foreign key to users table - user_id comes from Keycloak's sub claim
+
+model UserPreference {
+  userId    String   @id @map("user_id") @db.VarChar(255)
+  data      String   @db.Text
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@map("user_preferences")
+}
+
+model UserAnnotation {
+  userId    String   @map("user_id") @db.VarChar(255)
+  studyUid  String   @map("study_uid") @db.VarChar(255)
+  data      String   @db.Text
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@id([userId, studyUid])
+  @@map("user_annotations")
+}

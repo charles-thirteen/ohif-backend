@@ -20,7 +20,7 @@ const config: runtime.GetPrismaClientConfig = {
   "clientVersion": "7.3.0",
   "engineVersion": "9d6ad21cbbceab97458517b147a6a09ff43aa735",
   "activeProvider": "postgresql",
-  "inlineSchema": "// Refresh Token\nmodel RefreshToken {\n  id              String    @id @default(uuid())\n  userId          String    @map(\"user_id\")\n  token           String    @unique @db.VarChar(500)\n  expiresAt       DateTime  @map(\"expires_at\")\n  createdAt       DateTime  @default(now()) @map(\"created_at\")\n  createdByIp     String?   @map(\"created_by_ip\") @db.VarChar(100)\n  revokedAt       DateTime? @map(\"revoked_at\")\n  revokedByIp     String?   @map(\"revoked_by_ip\")\n  replacedByToken String?   @map(\"replaced_by_token\")\n\n  user User @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@index([userId], name: \"idx_refresh_tokens_user_id\")\n  @@index([token], name: \"idx_refresh_tokens_token\")\n  @@map(\"refresh_tokens\")\n}\n\nmodel User {\n  id          String    @id @default(uuid())\n  email       String    @unique @db.VarChar(255)\n  password    String    @db.VarChar(255)\n  firstName   String    @map(\"first_name\") @db.VarChar(100)\n  lastName    String    @map(\"last_name\") @db.VarChar(100)\n  lastLoginAt DateTime? @map(\"last_login_at\")\n  createdAt   DateTime  @default(now()) @map(\"created_at\")\n  updatedAt   DateTime  @updatedAt @map(\"updated_at\")\n  deletedAt   DateTime? @map(\"deleted_at\")\n  state       Json?\n\n  // Relations\n  refreshTokens RefreshToken[]\n\n  @@index([email], name: \"idx_users_email\")\n  @@map(\"users\")\n}\n\n// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider = \"prisma-client\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n",
+  "inlineSchema": "// Standalone tables for OHIF state persistence\n// No foreign key to users table - user_id comes from Keycloak's sub claim\n\nmodel UserPreference {\n  userId    String   @id @map(\"user_id\") @db.VarChar(255)\n  data      String   @db.Text\n  updatedAt DateTime @default(now()) @updatedAt @map(\"updated_at\")\n\n  @@map(\"user_preferences\")\n}\n\nmodel UserAnnotation {\n  userId    String   @map(\"user_id\") @db.VarChar(255)\n  studyUid  String   @map(\"study_uid\") @db.VarChar(255)\n  data      String   @db.Text\n  updatedAt DateTime @default(now()) @updatedAt @map(\"updated_at\")\n\n  @@id([userId, studyUid])\n  @@map(\"user_annotations\")\n}\n\n// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider = \"prisma-client\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n",
   "runtimeDataModel": {
     "models": {},
     "enums": {},
@@ -28,7 +28,7 @@ const config: runtime.GetPrismaClientConfig = {
   }
 }
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"RefreshToken\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"user_id\"},{\"name\":\"token\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"expiresAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"expires_at\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"},{\"name\":\"createdByIp\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"created_by_ip\"},{\"name\":\"revokedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"revoked_at\"},{\"name\":\"revokedByIp\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"revoked_by_ip\"},{\"name\":\"replacedByToken\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"replaced_by_token\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"RefreshTokenToUser\"}],\"dbName\":\"refresh_tokens\"},\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"password\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"firstName\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"first_name\"},{\"name\":\"lastName\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"last_name\"},{\"name\":\"lastLoginAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"last_login_at\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"updated_at\"},{\"name\":\"deletedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"deleted_at\"},{\"name\":\"state\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"refreshTokens\",\"kind\":\"object\",\"type\":\"RefreshToken\",\"relationName\":\"RefreshTokenToUser\"}],\"dbName\":\"users\"}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"UserPreference\":{\"fields\":[{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"user_id\"},{\"name\":\"data\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"updated_at\"}],\"dbName\":\"user_preferences\"},\"UserAnnotation\":{\"fields\":[{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"user_id\"},{\"name\":\"studyUid\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"study_uid\"},{\"name\":\"data\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"updated_at\"}],\"dbName\":\"user_annotations\"}},\"enums\":{},\"types\":{}}")
 
 async function decodeBase64AsWasm(wasmBase64: string): Promise<WebAssembly.Module> {
   const { Buffer } = await import('node:buffer')
@@ -60,8 +60,8 @@ export interface PrismaClientConstructor {
    * @example
    * ```
    * const prisma = new PrismaClient()
-   * // Fetch zero or more RefreshTokens
-   * const refreshTokens = await prisma.refreshToken.findMany()
+   * // Fetch zero or more UserPreferences
+   * const userPreferences = await prisma.userPreference.findMany()
    * ```
    * 
    * Read more in our [docs](https://pris.ly/d/client).
@@ -82,8 +82,8 @@ export interface PrismaClientConstructor {
  * @example
  * ```
  * const prisma = new PrismaClient()
- * // Fetch zero or more RefreshTokens
- * const refreshTokens = await prisma.refreshToken.findMany()
+ * // Fetch zero or more UserPreferences
+ * const userPreferences = await prisma.userPreference.findMany()
  * ```
  * 
  * Read more in our [docs](https://pris.ly/d/client).
@@ -177,24 +177,24 @@ export interface PrismaClient<
   }>>
 
       /**
-   * `prisma.refreshToken`: Exposes CRUD operations for the **RefreshToken** model.
+   * `prisma.userPreference`: Exposes CRUD operations for the **UserPreference** model.
     * Example usage:
     * ```ts
-    * // Fetch zero or more RefreshTokens
-    * const refreshTokens = await prisma.refreshToken.findMany()
+    * // Fetch zero or more UserPreferences
+    * const userPreferences = await prisma.userPreference.findMany()
     * ```
     */
-  get refreshToken(): Prisma.RefreshTokenDelegate<ExtArgs, { omit: OmitOpts }>;
+  get userPreference(): Prisma.UserPreferenceDelegate<ExtArgs, { omit: OmitOpts }>;
 
   /**
-   * `prisma.user`: Exposes CRUD operations for the **User** model.
+   * `prisma.userAnnotation`: Exposes CRUD operations for the **UserAnnotation** model.
     * Example usage:
     * ```ts
-    * // Fetch zero or more Users
-    * const users = await prisma.user.findMany()
+    * // Fetch zero or more UserAnnotations
+    * const userAnnotations = await prisma.userAnnotation.findMany()
     * ```
     */
-  get user(): Prisma.UserDelegate<ExtArgs, { omit: OmitOpts }>;
+  get userAnnotation(): Prisma.UserAnnotationDelegate<ExtArgs, { omit: OmitOpts }>;
 }
 
 export function getPrismaClientClass(): PrismaClientConstructor {
