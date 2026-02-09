@@ -4,6 +4,18 @@ import jwksClient from 'jwks-rsa';
 import { AppError } from '@Class/error';
 import logger from '@Util/logger';
 
+// Extend Express Request type
+declare global {
+	namespace Express {
+		interface Request {
+			user?: {
+				id: string;
+				email: string;
+			};
+		}
+	}
+}
+
 interface KeycloakTokenPayload {
 	sub: string;
 	email?: string;
@@ -16,7 +28,8 @@ interface KeycloakTokenPayload {
 }
 
 const KEYCLOAK_REALM_URL =
-	process.env.KEYCLOAK_REALM_URL || 'http://localhost:8080/realms/ohif';
+	process.env.KEYCLOAK_REALM_URL ||
+	'https://ohif-keycloak.duckdns.org/realms/ohif';
 const KEYCLOAK_CLIENT_ID = process.env.KEYCLOAK_CLIENT_ID || 'ohif-viewer';
 
 const client = jwksClient({
@@ -42,7 +55,7 @@ function getKey(
 }
 
 export class KeycloakMiddleware {
-	authenticate = (req: Request, res: Response, next: NextFunction): void => {
+	authenticate = (req: Request, _res: Response, next: NextFunction): void => {
 		const authHeader = req.headers.authorization;
 
 		if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -61,7 +74,10 @@ export class KeycloakMiddleware {
 			},
 			(err, decoded) => {
 				if (err) {
-					logger.warn({ error: err.message }, 'Keycloak token verification failed');
+					logger.warn(
+						{ error: err.message },
+						'Keycloak token verification failed',
+					);
 					next(AppError.unauthorized('Invalid token'));
 					return;
 				}

@@ -1,6 +1,10 @@
 import type { Request, Response, NextFunction } from 'express';
 import type { StateService } from './state.service';
 
+interface StudyParams {
+	studyUID: string;
+}
+
 export class StateController {
 	constructor(private stateService: StateService) {}
 
@@ -26,7 +30,11 @@ export class StateController {
 		}
 	};
 
-	getAnnotations = async (req: Request, res: Response, next: NextFunction) => {
+	getAnnotations = async (
+		req: Request<StudyParams>,
+		res: Response,
+		next: NextFunction,
+	) => {
 		try {
 			const userId = req.user!.id;
 			const { studyUID } = req.params;
@@ -38,7 +46,11 @@ export class StateController {
 		}
 	};
 
-	saveAnnotations = async (req: Request, res: Response, next: NextFunction) => {
+	saveAnnotations = async (
+		req: Request<StudyParams>,
+		res: Response,
+		next: NextFunction,
+	) => {
 		try {
 			const userId = req.user!.id;
 			const { studyUID } = req.params;
@@ -50,7 +62,11 @@ export class StateController {
 		}
 	};
 
-	deleteAnnotations = async (req: Request, res: Response, next: NextFunction) => {
+	deleteAnnotations = async (
+		req: Request<StudyParams>,
+		res: Response,
+		next: NextFunction,
+	) => {
 		try {
 			const userId = req.user!.id;
 			const { studyUID } = req.params;

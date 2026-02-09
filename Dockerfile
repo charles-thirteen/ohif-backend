@@ -1,19 +1,21 @@
-# Build stage
-FROM node:20-slim AS builder
-WORKDIR /app
-COPY package*.json ./
-COPY prisma ./prisma/
-RUN npm ci --only=production && \
-    npx prisma generate
-COPY . .
-RUN npm run build
-
-# Runtime stage
 FROM node:20-slim
 WORKDIR /app
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/prisma ./prisma
+
+# Install OpenSSL for Prisma
+RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
+
+# Copy package files and install dependencies
 COPY package*.json ./
+RUN npm ci
+
+# Copy prisma schema and generate client
+COPY prisma ./prisma/
+COPY prisma.config.ts ./
+RUN npx prisma generate
+
+# Copy source code and tsconfig
+COPY src ./src
+COPY tsconfig.json ./
+
 EXPOSE 3050
-CMD ["node", "dist/index.js"]
+CMD ["npm", "start"]

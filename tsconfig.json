@@ -1,16 +1,13 @@
 {
-	// Visit https://aka.ms/tsconfig to read more about this file
 	"compilerOptions": {
 		// File Layout
 		"rootDir": "./src",
 		"outDir": "./dist",
 
-		// Environment Settings
-		// See also https://aka.ms/tsconfig/module
-		"module": "ESNext",
-		"moduleResolution": "bundler",
-		"target": "ES2023",
-		"types": [],
+		// Environment Settings - CommonJS for Node.js compatibility
+		"module": "CommonJS",
+		"moduleResolution": "Node",
+		"target": "ES2022",
 
 		// Other Outputs
 		"sourceMap": true,
@@ -19,13 +16,12 @@
 
 		// Stricter Typechecking Options
 		"noUncheckedIndexedAccess": true,
-		"exactOptionalPropertyTypes": true,
 
 		// Style Options
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
 
-		// Path
+		// Path Aliases
 		"baseUrl": "./",
 		"paths": {
 			"@Domain/*": ["src/domains/*"],
@@ -38,13 +34,9 @@
 		// Recommended Options
 		"strict": true,
 		"esModuleInterop": true,
-		"ignoreDeprecations": "6.0",
 		"forceConsistentCasingInFileNames": true,
 		"resolveJsonModule": true,
-		"verbatimModuleSyntax": true,
 		"isolatedModules": true,
-		"noUncheckedSideEffectImports": true,
-		"moduleDetection": "force",
 		"skipLibCheck": true
 	},
 	"include": ["src/**/*"],
